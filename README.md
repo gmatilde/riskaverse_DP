@@ -61,17 +61,18 @@ This will ensure your `CVaR_MDPs` package is installed and ready for development
 Basic usage pattern:
 
 ```python
+import numpy as np
 from CVaR_MDPs.mdps import mdp
 
-n_states = 100
-n_actions = 10
+n_states = 10
+n_actions = 3
 
 # Initialize with transition and stage-cost data
 my_mdp = mdp(n_states, n_actions)
 
 gamma_ = 0.9
 alpha_ = 0.1
-v_0 = np.zeros(n_states)
+v_0 = np.zeros(n_states, )
 
 from CVaR_MDPs.solvers import SNMI
 
