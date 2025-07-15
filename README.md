@@ -63,8 +63,11 @@ Basic usage pattern:
 ```python
 from CVaR_MDPs.mdps import mdp
 
+n_states = 100
+n_actions = 10
+
 # Initialize with transition and stage-cost data
-mdp = mdp.PiecewiseCVaRMDP(P=..., g=..., gamma=0.9, zeta=0.3)
+my_mdp = mdp(n_states, n_actions)
 
 # Solve using one of the methods: "SNMI", "SNMII", "SNMIII", or "OPI"
 v_opt, pi_opt = mdp.solve(method="SNMIII", tol=1e-6, max_iter=100)
