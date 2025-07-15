@@ -69,8 +69,16 @@ n_actions = 10
 # Initialize with transition and stage-cost data
 my_mdp = mdp(n_states, n_actions)
 
+gamma_ = 0.9
+alpha_ = 0.1
+v_0 = np.zeros(n_states)
+
+from CVaR_MDPs.solvers import SNMI
+
+my_SNMI = SNMI(gamma_, alpha_)
+
 # Solve using one of the methods: "SNMI", "SNMII", "SNMIII", or "OPI"
-v_opt, pi_opt = mdp.solve(method="SNMIII", tol=1e-6, max_iter=100)
+v_opt, res = my_SNMI.solve(my_mdp, v_0)
 ```
 
 Check the `examples/` folder for detailed scripts on synthetic MDPs.
