@@ -6,7 +6,7 @@ This repository contains Python code for reproducing the benchmark experiments p
 # 🧠 riskaverse\_DP
 
 **Risk-Averse Dynamic Programming via Semismooth Newton Methods**
-This repository provides a Python implementation of novel semismooth Newton algorithms to solve **risk-averse Markov Decision Processes (MDPs)** under Markovian risk measures—particularly the Conditional Value at Risk (CVaR).
+This repository provides a Python implementation of novel semismooth Newton algorithms to solve **risk-averse Markov Decision Processes (MDPs)** under Markovian risk measures—particularly the Conditional Value at Risk (CVaR) and Mean-Upper-Semideviation of order 1 (MUS1).
 
 ---
 
@@ -18,7 +18,7 @@ This repository provides a Python implementation of novel semismooth Newton algo
   2. **SNM II**: A risk-averse policy-iteration–style Newton solve.
   3. **SNM III**: A linearized, piecewise-smooth Newton update.
 * Includes **risk-averse optimistic policy iteration** as a comparative baseline.
-* Supports **CVaR** as the primary risk measure, with theoretical guarantees of quadratic convergence under certain conditions.
+* Supports **CVaR** and **MUS1** as risk measures, with theoretical guarantees of quadratic convergence under certain conditions.
 * Benchmarked on synthetic MDPs with varied sizes and discount factors, with empirical performance data included.
 
 ---
@@ -49,10 +49,10 @@ Follow these steps to set up your development environment and install the packag
 4. **Verify installation**:
 
    ```bash
-   python -c "from CVaR_MDPs.mdps import mdp; print('Success')"
+   python -c "from riskaverse_DP.mdps import mdp; print('Success')"
    ```
 
-This will ensure your `CVaR_MDPs` package is installed and ready for development.
+This will ensure your `riskaverse_DP` package is installed and ready for development.
 
 ---
 
@@ -62,7 +62,7 @@ Basic usage pattern:
 
 ```python
 import numpy as np
-from CVaR_MDPs.mdps import mdp
+from riskaverse_DP.mdps import mdp
 
 n_states = 10
 n_actions = 3
@@ -74,7 +74,7 @@ gamma_ = 0.9
 alpha_ = 0.1
 v_0 = np.zeros(n_states, )
 
-from CVaR_MDPs.solvers import SNMI
+from riskaverse_DP.CVaR_solvers import SNMI
 
 my_SNMI = SNMI(gamma_, alpha_)
 
