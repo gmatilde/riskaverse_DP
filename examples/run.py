@@ -4,8 +4,7 @@ import time
 import json
 import argparse
 
-from CVaR_MDPs.mdps import mdp
-from CVaR_MDPs.solvers import SNMI, SNMII, SNMIII, CVaR_OPI 
+from riskaverse_DP.mdps import mdp
 
 def str2bool(v):
     if isinstance(v, bool):
@@ -26,8 +25,10 @@ parser.add_argument("-gamma", type=float, default=0.9,
                     help="discount factor")
 parser.add_argument("-alpha", type=float, default=0.3,
                     help="confidence level")
-parser.add_argument("-verbose", type=str2bool, default=True)
+parser.add_argument("-verbose", type=str2bool, default=False)
 parser.add_argument("-generate_plot", type=str2bool, default=True)
+parser.add_argument("-risk_measure", type=str, default="CVaR")
+
                     
 args = parser.parse_args()
 
@@ -40,6 +41,15 @@ m = args.m
 
 gamma = args.gamma
 alpha = args.alpha
+
+if args.risk_measure == "CVaR":
+    from riskaverse_DP.CVaR_solvers import SNMI, SNMII, SNMIII, OPI 
+
+elif args.risk_measure == "MUS1":
+    from riskaverse_DP.MUS1_solvers import SNMI, SNMII, SNMIII, OPI 
+
+else:
+    raise ValueError("{} is invalid!".format(args.risk_measure))
 
 VERBOSE = args.verbose
 
@@ -83,7 +93,7 @@ print("tot time: {} [s]".format(tot_time3))
 
 SNMIII_res = {"time": tot_time3, "residuals": res3}
 
-print("CVaR-OPI")
+print("{}-OPI".format(args.risk_measure))
 
 W_ = [1, 2, 5, 10, 20, 30, 50]
 
@@ -92,18 +102,18 @@ results = {"SNMI": SNMI_res, "SNMII_wT": SNMII_wT_res, "SNMII_wF": SNMII_wF_res,
 for W in W_:
 
     start_time = time.time()
-    riskaverse_newton_old = CVaR_OPI(gamma, alpha, tol1 = tol1_, max_inner_iter=W)
+    riskaverse_newton_old = OPI(gamma, alpha, tol1 = tol1_, max_inner_iter=W)
     v_4, res4 = riskaverse_newton_old.solve(MDP, np.ones(MDP.n, ), verbose=VERBOSE)
     tot_time = time.time() - start_time
     print("W:{}, tot time: {} [s]".format(W, tot_time))
 
-    name = "CVaROPI_{}".format(W)
+    name = "{}-OPI_{}".format(args.risk_measure, W)
 
     results[name] = {"time": tot_time, "residuals": res4, "inner-iterations": W}
 results["general-info"] = {"tol1": tol1_, "tol2": tol2_}
 
 #save results into json file
-with open("CVaRMDP_{}_{}_{}_{}.json".format(n, m, gamma, alpha), "w") as f:
+with open("{}-MDP_{}_{}_{}_{}.json".format(args.risk_measure, n, m, gamma, alpha), "w") as f:
     json.dump(results, f)
 
 f.close()
@@ -128,16 +138,16 @@ if args.generate_plot:
     plt.title(r"$\alpha = {},\,\gamma = {}$".format(args.alpha, args.gamma))
     plt.ylim(bottom=ymin) 
 
-    plt.savefig('SNMs_{}_{}_{}_{}.png'.format(args.n, args.m, args.gamma, args.alpha), bbox_inches='tight', dpi=600)
+    plt.savefig('{}-SNMs_{}_{}_{}_{}.png'.format(args.risk_measure, args.n, args.m, args.gamma, args.alpha), bbox_inches='tight', dpi=600)
 
 
     plt.figure(2)
 
     for ii, W in enumerate(W_):
 
-        name = "CVaROPI_{}".format(W)
+        name = "{}-OPI_{}".format(args.risk_measure, W)
         
-        plt.semilogy(results[name]["residuals"], c='green', linestyle = linestyles_[ii], label="Risk-averse OPI, W={}, time={:.3f}".format(W, results[name]["time"]))
+        plt.semilogy(results[name]["residuals"], c='green', linestyle = linestyles_[ii], label="{}-OPI, W={}, time={:.3f}".format(args.risk_measure, W, results[name]["time"]))
 
 
     plt.semilogy(res2_wT, c='k', label="SNMII (warm-start), time={:.3f} [s]".format(tot_time2wT))
@@ -150,5 +160,5 @@ if args.generate_plot:
     plt.title(r"$\alpha = {},\,\gamma = {}$".format(args.alpha, args.gamma))
     plt.ylim(bottom=ymin) 
 
-    plt.savefig('RiskAverseOPI_{}_{}_{}_{}.png'.format(args.n, args.m, args.gamma, args.alpha), bbox_inches='tight', dpi=600)
+    plt.savefig('{}-OPI_{}_{}_{}_{}.png'.format(args.risk_measure, args.n, args.m, args.gamma, args.alpha), bbox_inches='tight', dpi=600)
 
