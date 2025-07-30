@@ -93,6 +93,10 @@ Experiments on MDPs with sizes up to 100 states and diversified action spaces sh
 * **SNM methods** reach convergence in fewer than 10 iterations, whereas risk-averse VI needs over 150.
 * **CPU times**: SNM I and SNM III are most efficient; SNM II may face numeric issues depending on solver accuracy.
 
+| **MUS1 SNMs** | **MUS1 OPI** |
+|:-------------:|:------------:|
+| ![MUS1 SNMs](/examples/MUS1-SNMs_10_2_0.9_0.6.png) | ![MUS1 OPI](/examples/MUS1-OPI_10_2_0.9_0.6.png) |
+
 ---
 
 ## 📚 Background & Theory
